@@ -1,7 +1,6 @@
 package com.liquidchoco.contact.model;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.google.gson.annotations.SerializedName;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
@@ -12,46 +11,22 @@ import io.realm.annotations.PrimaryKey;
 
 public class Contact extends RealmObject{
     @PrimaryKey
+    @SerializedName("id")
     private int id;
+    @SerializedName("first_name")
     private String firstName;
+    @SerializedName("last_name")
     private String lastName;
+    @SerializedName("email")
     private String email;
+    @SerializedName("phone_number")
     private String phoneNumber;
+    @SerializedName("profile_pic")
     private String profilePic;
+    @SerializedName("favorite")
     private boolean favorite;
-//    private Date createdAt;
-//    private Date updatedAt;
 
     public Contact() {
-    }
-
-    public Contact(JSONObject object) {
-        try {
-            if(object.has("id")) {
-                setId(object.getInt("id"));
-            }
-
-            if(object.has("first_name")) {
-                setFirstName(object.getString("first_name"));
-            }
-            if(object.has("last_name")) {
-                setLastName(object.getString("last_name"));
-            }
-            if(object.has("email")) {
-                setEmail(object.getString("email"));
-            }
-            if(object.has("phone_number")) {
-                setPhoneNumber(object.getString("phone_number"));
-            }
-            if(object.has("profile_pic")) {
-                setProfilePic(object.getString("profile_pic"));
-            }
-            if(object.has("favorite")) {
-                setFavorite(object.getBoolean("favorite"));
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
     }
 
     public int getId() {
@@ -109,20 +84,4 @@ public class Contact extends RealmObject{
     public void setFavorite(boolean favorite) {
         this.favorite = favorite;
     }
-
-//    public Date getCreatedAt() {
-//        return createdAt;
-//    }
-//
-//    public void setCreatedAt(Date createdAt) {
-//        this.createdAt = createdAt;
-//    }
-//
-//    public Date getUpdatedAt() {
-//        return updatedAt;
-//    }
-//
-//    public void setUpdatedAt(Date updatedAt) {
-//        this.updatedAt = updatedAt;
-//    }
 }

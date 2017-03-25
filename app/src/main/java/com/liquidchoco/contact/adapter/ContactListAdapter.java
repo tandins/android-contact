@@ -3,6 +3,7 @@ package com.liquidchoco.contact.adapter;
 import android.content.Context;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,11 +14,12 @@ import com.liquidchoco.contact.R;
 import com.liquidchoco.contact.model.Contact;
 import com.liquidchoco.contact.singleton.InterfaceManager;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 
 import io.realm.RealmList;
-
 
 /**
  * Created by Yunita Andini on 3/25/17.
@@ -35,21 +37,41 @@ public class ContactListAdapter extends RecyclerView.Adapter {
     public void updateAdapter(RealmList<Contact> contactRealmList){
         this.contactRealmList = new RealmList<>();
 
+        RealmList<Contact> favoriteRealmList = new RealmList<>();
         Set<Integer> favoriteContactIdSet = new HashSet<>();
         for(Contact contact : contactRealmList) {
             if(contact.isFavorite()) {
                 favoriteContactIdSet.add(contact.getId());
-                this.contactRealmList.add(contact);
+                favoriteRealmList.add(contact);
             }
         }
+
+        Collections.sort(favoriteRealmList, new Comparator<Contact>() {
+            @Override
+            public int compare(Contact lhs, Contact rhs) {
+                return getName(lhs).compareToIgnoreCase(getName(rhs));
+            }
+        });
+
+        this.contactRealmList = favoriteRealmList;
 
         totalFavorite = favoriteContactIdSet.size();
 
+        RealmList<Contact> unfavoriteRealmList = new RealmList<>();
         for(Contact contact : contactRealmList) {
             if(!favoriteContactIdSet.contains(contact.getId())){
-                this.contactRealmList.add(contact);
+                unfavoriteRealmList.add(contact);
             }
         }
+
+        Collections.sort(unfavoriteRealmList, new Comparator<Contact>() {
+            @Override
+            public int compare(Contact lhs, Contact rhs) {
+                return getName(lhs).compareToIgnoreCase(getName(rhs));
+            }
+        });
+
+        this.contactRealmList.addAll(favoriteRealmList.size(), unfavoriteRealmList);
     }
 
     @Override
@@ -75,7 +97,8 @@ public class ContactListAdapter extends RecyclerView.Adapter {
             itemHolder.favoriteIconImageView.setVisibility(View.INVISIBLE);
         }
 
-        itemHolder.contactNameTextView.setText(InterfaceManager.sharedInstance().getFirstLetterCapitalized(contact.getFirstName()) + " " + InterfaceManager.sharedInstance().getFirstLetterCapitalized(contact.getLastName()));
+        itemHolder.contactNameTextView.setText(contact.getFirstName() + " " + contact.getLastName());
+//        itemHolder.contactNameTextView.setText(InterfaceManager.sharedInstance().getFirstLetterCapitalized(contact.getFirstName()) + " " + InterfaceManager.sharedInstance().getFirstLetterCapitalized(contact.getLastName()));
         itemHolder.contactInitialTextView.setText(InterfaceManager.sharedInstance().getInitialName(contact.getFirstName()));
     }
 
@@ -102,5 +125,9 @@ public class ContactListAdapter extends RecyclerView.Adapter {
             contactInitialTextView = (TextView) itemView.findViewById(R.id.item_contact_contactInitialTextView);
             contactNameTextView = (TextView) itemView.findViewById(R.id.item_contact_contactNameTextView);
         }
+    }
+
+    public String getName (Contact contact){
+        return contact.getFirstName() + " " + contact.getLastName();
     }
 }

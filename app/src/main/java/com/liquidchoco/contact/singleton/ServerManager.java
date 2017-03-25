@@ -1,13 +1,14 @@
 package com.liquidchoco.contact.singleton;
 
 import android.content.Context;
-import android.util.Log;
 
+import com.liquidchoco.contact.AddContactPresenter;
 import com.liquidchoco.contact.ContactPresenter;
 import com.liquidchoco.contact.model.Contact;
 import com.liquidchoco.contact.model.serverResponse.ContactResponse;
 import com.squareup.okhttp.OkHttpClient;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -78,4 +79,39 @@ public class ServerManager{
         });
     }
 
+    public void postContacts(String firstName, String lastName, String phoneNumber, String email, final AddContactPresenter presenter) {
+        ServiceInterface serviceInterface = host.create(ServiceInterface.class);
+
+        HashMap<String, Object> parameter = new HashMap<>();
+        parameter.put("first_name", firstName);
+        parameter.put("last_name", lastName);
+        parameter.put("phone_number", phoneNumber);
+        parameter.put("email", email);
+        parameter.put("favorite", false);
+
+        serviceInterface.postContacts("application/json", parameter, new Callback<Contact>() {
+            @Override
+            public void success(Contact contact, Response response) {
+                realm.beginTransaction();
+                RealmList<Contact> contactRealmList = new RealmList<Contact>();
+                ContactResponse contactResponse = realm.where(ContactResponse.class).equalTo("id", "0").findFirst();
+                if(contactResponse!=null) {
+                    if (!contactResponse.getContactRealmList().contains(contact)) {
+                        contactRealmList = contactResponse.getContactRealmList();
+                        contactRealmList.add(contact);
+                    }
+                    contactResponse.setContactRealmList(contactRealmList);
+                    realm.copyToRealmOrUpdate(contactResponse);
+
+                }
+                realm.commitTransaction();
+                presenter.onSuccess();
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                presenter.onFailed("Unable to contact the server");
+            }
+        });
+    }
 }

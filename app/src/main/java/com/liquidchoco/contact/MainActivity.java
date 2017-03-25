@@ -1,6 +1,7 @@
 package com.liquidchoco.contact;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,6 +17,7 @@ import com.liquidchoco.contact.singleton.ServerManager;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.realm.Realm;
 
 public class MainActivity extends Activity implements MainActivityPresenter {
@@ -47,7 +49,11 @@ public class MainActivity extends Activity implements MainActivityPresenter {
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(contactListAdapter);
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
         reloadLocalData();
     }
 
@@ -113,5 +119,10 @@ public class MainActivity extends Activity implements MainActivityPresenter {
     @Override
     public void showErrorMessage(String errorString) {
         InterfaceManager.sharedInstance().showErrorMessage(this, errorString);
+    }
+
+    @OnClick(R.id.activity_main_addContactImageView)
+    public void addContactTapped(){
+        startActivity(new Intent(this, AddContactActivity.class));
     }
 }

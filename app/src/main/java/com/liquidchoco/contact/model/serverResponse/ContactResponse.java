@@ -22,11 +22,11 @@ public class ContactResponse extends RealmObject {
 
     public ContactResponse(List<Contact> contacts) {
         setId("0");
-        RealmList<Contact> contactRealmList = new RealmList<Contact>();
-        for(Contact contact: contacts) {
-            contactRealmList.add(contact);
+        RealmList<Contact> theContactRealmList = new RealmList<>();
+        for(Contact contact : contacts) {
+            theContactRealmList.add(contact);
         }
-        setContactRealmList(contactRealmList);
+        setContactRealmList(theContactRealmList);
     }
 
     public String getId() {
