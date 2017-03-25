@@ -1,17 +1,17 @@
 package com.liquidchoco.contact;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.telephony.TelephonyManager;
-import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -28,7 +28,11 @@ import com.liquidchoco.contact.singleton.InterfaceManager;
 import com.liquidchoco.contact.singleton.ServerManager;
 import com.liquidchoco.contact.singleton.SettingsManager;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -97,7 +101,59 @@ public class ContactDetailActivity extends Activity implements ContactDetailActi
 
     @OnClick (R.id.activity_contact_detail_moreImageView)
     public void moreTapped() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Share contact as");
 
+        List<String> shareList = new ArrayList<String>();
+        shareList.add("vCard file (VCF)");
+        shareList.add("Text");
+
+        final CharSequence shares[] = shareList.toArray(new CharSequence[shareList.size()]);
+        builder.setItems(shares, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    case 0:
+                        File vcfFile = new File(getExternalFilesDir(null), "generated.vcf");
+                        try {
+                            FileWriter fw = new FileWriter(vcfFile);
+
+                            fw.write("BEGIN:VCARD\r\n");
+                            fw.write("VERSION:3.0\r\n");
+                            fw.write("N:" + contact.getLastName() + ";" + contact.getFirstName() + "\r\n");
+                            fw.write("FN:" + contact.getFirstName() + " " + contact.getLastName() + "\r\n");
+                            fw.write("ORG:" + "" + "\r\n");
+                            fw.write("TITLE:" + "" + "\r\n");
+                            fw.write("TEL;TYPE=WORK,VOICE:" + contact.getPhoneNumber() + "\r\n");
+                            fw.write("TEL;TYPE=HOME,VOICE:" + contact.getPhoneNumber() + "\r\n");
+                            fw.write("ADR;TYPE=WORK:;;" + "" +"\r\n");
+                            fw.write("EMAIL;TYPE=PREF,INTERNET:" + contact.getEmail() + "\r\n");
+                            fw.write("END:VCARD\r\n");
+                            fw.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        Intent vcfIntent = new Intent();
+                        vcfIntent.setAction(Intent.ACTION_SEND);
+                        vcfIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(vcfFile));
+                        vcfIntent.setType("text/x-vcard");
+                        startActivity(Intent.createChooser(vcfIntent, "Share contact with/via"));
+                        break;
+
+                    default:
+                        String text = contact.getFirstName() + " " + contact.getLastName() + "\n" + "Mobile " + contact.getPhoneNumber() + "\n" + "Email " + contact.getEmail();
+
+                        Intent textIntent = new Intent();
+                        textIntent.setAction(Intent.ACTION_SEND);
+                        textIntent.putExtra(Intent.EXTRA_TEXT, text);
+                        textIntent.setType("text/plain");
+                        startActivity(Intent.createChooser(textIntent, "Share contact with/via"));
+                        break;
+                }
+            }
+        });
+        builder.show();
     }
 
     @OnClick (R.id.activity_contact_detail_messageIconImageView)
