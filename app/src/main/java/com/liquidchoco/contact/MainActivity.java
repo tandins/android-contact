@@ -10,10 +10,12 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.liquidchoco.contact.adapter.ContactListAdapter;
+import com.liquidchoco.contact.model.Contact;
 import com.liquidchoco.contact.model.serverResponse.ContactResponse;
 import com.liquidchoco.contact.singleton.AppController;
 import com.liquidchoco.contact.singleton.InterfaceManager;
 import com.liquidchoco.contact.singleton.ServerManager;
+import com.liquidchoco.contact.singleton.SettingsManager;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -43,7 +45,7 @@ public class MainActivity extends Activity implements MainActivityPresenter {
 
         realm = AppController.getInstance().realm;
 
-        contactListAdapter = new ContactListAdapter(this);
+        contactListAdapter = new ContactListAdapter(this, listenerInterface);
         linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(linearLayoutManager);
@@ -125,4 +127,13 @@ public class MainActivity extends Activity implements MainActivityPresenter {
     public void addContactTapped(){
         startActivity(new Intent(this, AddContactActivity.class));
     }
+
+    ContactListAdapter.ListenerInterface listenerInterface = new ContactListAdapter.ListenerInterface() {
+        @Override
+        public void onItemTapped(Contact contact) {
+            onPause();
+            SettingsManager.getInstance().setContact(contact);
+            startActivity(new Intent(MainActivity.this, ContactDetailActivity.class));
+        }
+    };
 }

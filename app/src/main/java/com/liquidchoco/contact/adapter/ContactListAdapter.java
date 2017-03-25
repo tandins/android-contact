@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.liquidchoco.contact.R;
@@ -29,9 +30,15 @@ public class ContactListAdapter extends RecyclerView.Adapter {
     private Context context;
     private RealmList<Contact> contactRealmList = new RealmList<>();
     private int totalFavorite = 0;
+    private ListenerInterface listenerInterface;
 
-    public ContactListAdapter(Context context) {
+    public ContactListAdapter(Context context, ListenerInterface listenerInterface) {
         this.context = context;
+        this.listenerInterface = listenerInterface;
+    }
+
+    public interface ListenerInterface{
+        void onItemTapped(Contact contact);
     }
 
     public void updateAdapter(RealmList<Contact> contactRealmList){
@@ -80,9 +87,9 @@ public class ContactListAdapter extends RecyclerView.Adapter {
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
         ItemHolder itemHolder = (ItemHolder) holder;
-        Contact contact = contactRealmList.get(position);
+        final Contact contact = contactRealmList.get(position);
 
         if(position<totalFavorite && position==0) {
             itemHolder.initialTextView.setVisibility(View.INVISIBLE);
@@ -100,6 +107,13 @@ public class ContactListAdapter extends RecyclerView.Adapter {
         itemHolder.contactNameTextView.setText(contact.getFirstName() + " " + contact.getLastName());
 //        itemHolder.contactNameTextView.setText(InterfaceManager.sharedInstance().getFirstLetterCapitalized(contact.getFirstName()) + " " + InterfaceManager.sharedInstance().getFirstLetterCapitalized(contact.getLastName()));
         itemHolder.contactInitialTextView.setText(InterfaceManager.sharedInstance().getInitialName(contact.getFirstName()));
+
+        itemHolder.rootLinearLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listenerInterface.onItemTapped(contact);
+            }
+        });
     }
 
     @Override
@@ -113,6 +127,7 @@ public class ContactListAdapter extends RecyclerView.Adapter {
     }
 
     public class ItemHolder extends RecyclerView.ViewHolder {
+        LinearLayout rootLinearLayout;
         TextView initialTextView;
         ImageView favoriteIconImageView;
         TextView contactInitialTextView;
@@ -120,6 +135,7 @@ public class ContactListAdapter extends RecyclerView.Adapter {
 
         public ItemHolder(View itemView) {
             super(itemView);
+            rootLinearLayout = (LinearLayout) itemView.findViewById(R.id.item_contact_rootLinearLayout);
             initialTextView = (TextView) itemView.findViewById(R.id.item_contact_initialTextView);
             favoriteIconImageView = (ImageView) itemView.findViewById(R.id.item_contact_favoriteIconImageView);
             contactInitialTextView = (TextView) itemView.findViewById(R.id.item_contact_contactInitialTextView);

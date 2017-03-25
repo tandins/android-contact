@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/activity_contact_detail_rootFrameLayout"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.yunitaandini.contact.viewController.ContactDetailActivity">
+    tools:context="com.liquidchoco.contact.ContactDetailActivity">
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
@@ -15,9 +16,15 @@
             <ImageView
                 android:id="@+id/activity_contact_detail_contactImageView"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="200dp"
                 android:src="@drawable/ic_betty_allen"
-                android:scaleType="centerCrop"/>
+                android:background="@color/appGray1" />
+
+            <View
+                android:id="@+id/activity_contact_detail_overlayView"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:background="#66000000"/>
 
             <LinearLayout
                 android:orientation="horizontal"

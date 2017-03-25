@@ -1,5 +1,6 @@
 package com.liquidchoco.contact.singleton;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -67,6 +68,48 @@ public class InterfaceManager {
                     isErrMsgShown = false;
                 }
             });
+            AlertDialog alertDialog = alrt.create();
+            alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                @Override
+                public void onShow(DialogInterface dialog) {
+                    Button positiveButton = ((AlertDialog) dialog).getButton(DialogInterface.BUTTON_POSITIVE);
+                    Button negativeButton = ((AlertDialog) dialog).getButton(DialogInterface.BUTTON_NEGATIVE);
+
+                    positiveButton.setTextColor(Color.parseColor("#8BC34A"));
+                    negativeButton.setTextColor(Color.parseColor("#8BC34A"));
+                }
+            });
+
+            alertDialog.show();
+        } else {
+
+        }
+    }
+
+    public void showPopUpAlert(final Activity activity, String message) {
+        if (isErrMsgShown == false) {
+            isErrMsgShown = true;
+            AlertDialog.Builder alrt;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                alrt = new AlertDialog.Builder(activity, android.R.style.Theme_Material_Light_Dialog_Alert);
+            } else {
+                alrt = new AlertDialog.Builder(activity);
+            }
+            alrt.setMessage(message);
+            alrt.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    isErrMsgShown = false;
+                }
+            });
+
+            alrt.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    activity.finish();
+                }
+            });
+
             AlertDialog alertDialog = alrt.create();
             alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
                 @Override

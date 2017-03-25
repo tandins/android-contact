@@ -3,6 +3,7 @@ package com.liquidchoco.contact.singleton;
 import android.content.Context;
 
 import com.liquidchoco.contact.AddContactPresenter;
+import com.liquidchoco.contact.ContactDetailPresenter;
 import com.liquidchoco.contact.ContactPresenter;
 import com.liquidchoco.contact.model.Contact;
 import com.liquidchoco.contact.model.serverResponse.ContactResponse;
@@ -31,6 +32,7 @@ public class ServerManager{
 
     private Realm realm;
     private Context context;
+    private ServiceInterface serviceInterface;
 
     /**
      * Returns singleton class instance
@@ -56,10 +58,11 @@ public class ServerManager{
 
         host = new RestAdapter.Builder().setEndpoint("http://gojek-contacts-app.herokuapp.com")
                 .setLogLevel(RestAdapter.LogLevel.NONE).setClient(new OkClient(client)).build();
+
+        serviceInterface = host.create(ServiceInterface.class);
     }
 
     public void getContacts(final ContactPresenter presenter){
-        ServiceInterface serviceInterface = host.create(ServiceInterface.class);
         serviceInterface.getContacts(new Callback<List<Contact>>() {
             @Override
             public void success(List<Contact> contacts, Response response) {
@@ -80,8 +83,6 @@ public class ServerManager{
     }
 
     public void postContacts(String firstName, String lastName, String phoneNumber, String email, final AddContactPresenter presenter) {
-        ServiceInterface serviceInterface = host.create(ServiceInterface.class);
-
         HashMap<String, Object> parameter = new HashMap<>();
         parameter.put("first_name", firstName);
         parameter.put("last_name", lastName);
@@ -89,7 +90,7 @@ public class ServerManager{
         parameter.put("email", email);
         parameter.put("favorite", false);
 
-        serviceInterface.postContacts("application/json", parameter, new Callback<Contact>() {
+        serviceInterface.postContact("application/json", parameter, new Callback<Contact>() {
             @Override
             public void success(Contact contact, Response response) {
                 realm.beginTransaction();
@@ -113,5 +114,46 @@ public class ServerManager{
                 presenter.onFailed("Unable to contact the server");
             }
         });
+    }
+
+    public void getContactDetail(int contactId, final ContactDetailPresenter presenter){
+        serviceInterface.getContactDetail(contactId, new Callback<Contact>() {
+            @Override
+            public void success(Contact contact, Response response) {
+                presenter.onSuccess(contact);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                presenter.onFailed("Unable to contact the server");
+            }
+        });
+    }
+
+    public void updateContact(Contact contact, final ContactDetailPresenter presenter){
+        HashMap<String, Object> parameter = new HashMap<>();
+        parameter.put("first_name", contact.getFirstName());
+        parameter.put("last_name", contact.getLastName());
+        parameter.put("phone_number", contact.getPhoneNumber());
+        parameter.put("email", contact.getEmail());
+        parameter.put("profile_pic", contact.getProfilePic());
+        parameter.put("favorite", contact.isFavorite());
+
+        serviceInterface.putContact(contact.getId(), "application/json", parameter, new Callback<Contact>() {
+            @Override
+            public void success(Contact contact, Response response) {
+                realm.beginTransaction();
+                realm.copyToRealmOrUpdate(contact);
+                realm.commitTransaction();
+
+                presenter.onSuccess(contact);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                presenter.onFailed("Unable to contact the server");
+            }
+        });
+
     }
 }

@@ -42,6 +42,7 @@
                                 android:src="@drawable/ic_back"/>
 
                             <com.liquidchoco.contact.customClass.RobotoMediumTextView
+                                android:id="@+id/activity_add_contact_titleTextView"
                                 android:layout_toLeftOf="@+id/activity_add_contact_saveImageView"
                                 android:layout_toRightOf="@+id/activity_add_contact_backImageView"
                                 android:layout_width="match_parent"
@@ -106,8 +107,6 @@
                         <android.support.design.widget.TextInputLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:focusable="false"
-                            android:focusableInTouchMode="true"
                             android:textColorHint="#61000000"
                             android:nextFocusDown="@+id/activity_add_contact_phoneEditText">
                             <com.liquidchoco.contact.customClass.RobotoRegularEditText
@@ -150,8 +149,6 @@
                         <android.support.design.widget.TextInputLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:focusable="false"
-                            android:focusableInTouchMode="true"
                             android:textColorHint="#61000000"
                             android:nextFocusDown="@+id/activity_add_contact_emailEditText">
                             <com.liquidchoco.contact.customClass.RobotoRegularEditText
@@ -195,8 +192,6 @@
                         <android.support.design.widget.TextInputLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:focusable="false"
-                            android:focusableInTouchMode="true"
                             android:textColorHint="#61000000">
                             <com.liquidchoco.contact.customClass.RobotoRegularEditText
                             android:id="@+id/activity_add_contact_emailEditText"

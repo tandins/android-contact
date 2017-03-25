@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.liquidchoco.contact.model.Contact;
+
 import java.util.Map;
 
 /**
@@ -16,6 +18,8 @@ public class SettingsManager {
     private static SharedPreferences PREF = null;
     private static SharedPreferences.Editor PREF_EDITOR = null;
     private static SettingsManager SETTINGSMANAGER = null;
+
+    private Contact contact;
 
     public static SettingsManager getInstance() {
         if (SETTINGSMANAGER == null) {
@@ -88,5 +92,13 @@ public class SettingsManager {
     public void setInt(String key, int value) {
         PREF_EDITOR.putInt(key, value);
         PREF_EDITOR.commit();
+    }
+
+    public Contact getContact() {
+        return contact;
+    }
+
+    public void setContact(Contact contact) {
+        this.contact = contact;
     }
 }

@@ -23,8 +23,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
+import com.liquidchoco.contact.model.Contact;
 import com.liquidchoco.contact.singleton.InterfaceManager;
 import com.liquidchoco.contact.singleton.ServerManager;
+import com.liquidchoco.contact.singleton.SettingsManager;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -49,9 +55,13 @@ public class AddContactActivity extends Activity implements AddContactActivityPr
     private File croppedPhotoFile = null;
     private Uri photoUri;
     private List<String> invalidFields = new ArrayList<>();
+    private String state = "addNewContact";
 
     @BindView(R.id.activity_add_contact_rootFrameLayout)
     FrameLayout rootFrameLayout;
+
+    @BindView(R.id.activity_add_contact_titleTextView)
+    TextView titleTextView;
 
     @BindView(R.id.activity_add_contact_contactImageView)
     ImageView contactImageView;
@@ -81,11 +91,52 @@ public class AddContactActivity extends Activity implements AddContactActivityPr
         ButterKnife.bind(this);
 
         contactImageView.getLayoutParams().height = contactImageView.getLayoutParams().width * 17 / 10;
+
+        titleTextView.setText("Add New Contact");
+        if(getIntent().hasExtra("state")) {
+            if(getIntent().getStringExtra("state").equalsIgnoreCase("editExistingContact")) {
+                state = getIntent().getStringExtra("state");
+                titleTextView.setText("Edit Contact");
+                populateInitView(SettingsManager.getInstance().getContact());
+            }
+        }
     }
 
     @OnClick(R.id.activity_add_contact_backImageView)
     public void backTapped(){
-        finish();
+        int difference = 0;
+        if(state.equalsIgnoreCase("addNewContact")) {
+            if(nameEditText.getText().toString().length()>0) {
+                difference++;
+            }
+
+            if(phoneEditText.getText().toString().length()>0) {
+                difference++;
+            }
+
+            if(emailEditText.getText().toString().length()>0) {
+                difference++;
+            }
+        }else {
+            Contact currentContact = SettingsManager.getInstance().getContact();
+            if(!nameEditText.getText().toString().equalsIgnoreCase(currentContact.getFirstName() + " " + currentContact.getLastName())) {
+                difference++;
+            }
+
+            if(!phoneEditText.getText().toString().equalsIgnoreCase(currentContact.getPhoneNumber())) {
+                difference++;
+            }
+
+            if(!emailEditText.getText().toString().equalsIgnoreCase(currentContact.getEmail())) {
+                difference++;
+            }
+        }
+
+        if(difference>0) {
+            InterfaceManager.sharedInstance().showPopUpAlert(this, "Are you sure want to discard changes?");
+        }else {
+            finish();
+        }
     }
 
     @OnClick (R.id.activity_add_contact_saveImageView)
@@ -403,4 +454,23 @@ public class AddContactActivity extends Activity implements AddContactActivityPr
             showErrorMessage(errorString);
         }
     };
+
+    private void populateInitView(Contact contact) {
+        Glide.with(this).load(contact.getProfilePic()).placeholder(R.drawable.ic_profile_large).listener(new RequestListener<String, GlideDrawable>() {
+            @Override
+            public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                return false;
+            }
+
+            @Override
+            public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                contactImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                return false;
+            }
+        }).into(contactImageView);
+
+        nameEditText.setText(contact.getFirstName() + " " + contact.getLastName());
+        phoneEditText.setText(contact.getPhoneNumber());
+        emailEditText.setText(contact.getEmail());
+    }
 }
