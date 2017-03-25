@@ -100,3 +100,5 @@ contact/.idea/compiler.xml
 contact/.idea/misc.xml
 contact/.idea/workspace.xml
 contact/.idea/copyright/profiles_settings.xml
+.idea/libraries/butterknife_8_5_1.xml
+.idea/libraries/butterknife_annotations_8_5_1.xml

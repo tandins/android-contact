@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingRight="16dp"
+    android:paddingLeft="16dp"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp">
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginRight="32dp">
+        <ImageView
+            android:id="@+id/item_contact_favoriteIconImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_favourite_filled"
+            android:tint="@color/colorPrimary"/>
+
+        <com.liquidchoco.contact.customClass.RobotoRegularTextView
+            android:id="@+id/item_contact_initialTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="A"
+            android:textSize="20sp"
+            android:textColor="@android:color/white"/>
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginRight="12dp"
+        android:background="@drawable/circle_green">
+        <com.liquidchoco.contact.customClass.RobotoRegularTextView
+            android:id="@+id/item_contact_contactInitialTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="A"
+            android:textSize="20sp"
+            android:textColor="@android:color/white"/>
+    </FrameLayout>
+
+    <com.liquidchoco.contact.customClass.RobotoRegularTextView
+        android:id="@+id/item_contact_contactNameTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:text="Betty Allen"
+        android:textSize="14sp"
+        android:textColor="#DE000000"
+        android:singleLine="true"
+        android:ellipsize="end"/>
+</LinearLayout>

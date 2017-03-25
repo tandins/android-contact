@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.yunitaandini.contact.viewController.ContactDetailActivity">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/activity_contact_detail_contactImageView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_betty_allen"
+                android:scaleType="centerCrop"/>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right">
+                <ImageView
+                    android:id="@+id/activity_contact_detail_favoriteImageView"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:padding="10dp"
+                    android:src="@drawable/ic_favourite"/>
+
+                <ImageView
+                    android:id="@+id/activity_contact_detail_editImageView"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:padding="10dp"
+                    android:src="@drawable/ic_edit"/>
+
+                <ImageView
+                    android:id="@+id/activity_contact_detail_moreImageView"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:padding="10dp"
+                    android:src="@drawable/ic_more"/>
+            </LinearLayout>
+
+            <com.liquidchoco.contact.customClass.RobotoRegularTextView
+                android:id="@+id/activity_contact_detail_contactNameTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginLeft="16dp"
+                android:layout_marginBottom="16dp"
+                android:text="Betty Allen"
+                android:textSize="28sp"
+                android:textColor="@android:color/white"/>
+        </FrameLayout>
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="26dp"
+                android:paddingBottom="26dp"
+                android:paddingLeft="16dp"
+                android:background="@android:color/white">
+                <ImageView
+                    android:id="@+id/activity_contact_detail_phoneIconImageView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="28dp"
+                    android:src="@drawable/ic_call_blue"/>
+
+                <LinearLayout
+                    android:id="@+id/activity_contact_detail_phoneLinearLayout"
+                    android:layout_toLeftOf="@+id/activity_contact_detail_messageIconImageView"
+                    android:layout_toRightOf="@+id/activity_contact_detail_phoneIconImageView"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <com.liquidchoco.contact.customClass.RobotoRegularTextView
+                        android:id="@+id/activity_contact_detail_phoneTextView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="+91 9999999999"
+                        android:textSize="16sp"
+                        android:textColor="#DE000000"/>
+
+                    <com.liquidchoco.contact.customClass.RobotoRegularTextView
+                        android:id="@+id/activity_contact_detail_mobileTextView"
+                        android:layout_below="@+id/activity_contact_detail_phoneTextView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Mobile"
+                        android:textSize="14sp"
+                        android:textColor="#8A000000"/>
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/activity_contact_detail_messageIconImageView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginTop="1dp"
+                    android:layout_marginLeft="28dp"
+                    android:layout_marginRight="16dp"
+                    android:src="@drawable/ic_message"/>
+
+                <View
+                    android:id="@+id/activity_contact_detail_footerView"
+                    android:layout_toRightOf="@+id/activity_contact_detail_phoneIconImageView"
+                    android:layout_below="@+id/activity_contact_detail_phoneLinearLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:background="#D8D8D8"/>
+
+                <ImageView
+                    android:id="@+id/activity_contact_detail_emailIconImageView"
+                    android:layout_below="@+id/activity_contact_detail_footerView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="28dp"
+                    android:src="@drawable/ic_email_blue"/>
+
+                <LinearLayout
+                    android:id="@+id/activity_contact_detail_emailLinearLayout"
+                    android:layout_below="@+id/activity_contact_detail_footerView"
+                    android:layout_toRightOf="@+id/activity_contact_detail_emailIconImageView"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="16dp">
+                    <com.liquidchoco.contact.customClass.RobotoRegularTextView
+                        android:id="@+id/activity_contact_detail_emailTextView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="betty.allen@gmail.com"
+                        android:textSize="16sp"
+                        android:textColor="#DE000000"/>
+
+                    <com.liquidchoco.contact.customClass.RobotoRegularTextView
+                        android:id="@+id/activity_contact_detail_emailText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Email"
+                        android:textSize="14sp"
+                        android:textColor="#8A000000"/>
+                </LinearLayout>
+            </RelativeLayout>
+        </android.support.v7.widget.CardView>
+    </LinearLayout>
+</FrameLayout>
