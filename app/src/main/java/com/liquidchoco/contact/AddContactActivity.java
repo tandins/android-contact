@@ -49,7 +49,7 @@ import butterknife.OnClick;
  * Created by Yunita Andini on 3/25/17.
  */
 
-public class AddContactActivity extends Activity implements AddContactActivityPresenter {
+public class AddContactActivity extends Activity implements Presenter {
     private Boolean isEligible = false;
     private File photoFile = null;
     private File croppedPhotoFile = null;
@@ -166,7 +166,7 @@ public class AddContactActivity extends Activity implements AddContactActivityPr
             String email = emailEditText.getText().toString();
 
             showLoading();
-            ServerManager.getInstance().postContacts(firstName, lastName, phone, email, addContactPresenter);
+            ServerManager.getInstance().postContacts(firstName, lastName, phone, email, contactDetailPresenter);
 
         }else {
             if(invalidFields.size()>0) {
@@ -441,9 +441,9 @@ public class AddContactActivity extends Activity implements AddContactActivityPr
         return pattern.matcher(email).matches();
     }
 
-    AddContactPresenter addContactPresenter = new AddContactPresenter() {
+    ContactDetailPresenter contactDetailPresenter = new ContactDetailPresenter() {
         @Override
-        public void onSuccess() {
+        public void onSuccess(Contact contact) {
             hideLoading();
             finish();
         }

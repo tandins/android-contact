@@ -44,7 +44,7 @@ import io.realm.Realm;
  * Created by dss-10 on 3/25/17.
  */
 
-public class ContactDetailActivity extends Activity implements ContactDetailActivityPresenter {
+public class ContactDetailActivity extends Activity implements Presenter {
     @BindView(R.id.activity_contact_detail_rootFrameLayout)
     FrameLayout rootFrameLayout;
     @BindView(R.id.activity_contact_detail_contactImageView)
@@ -250,6 +250,11 @@ public class ContactDetailActivity extends Activity implements ContactDetailActi
         }else {
             favoriteImageView.setImageDrawable(InterfaceManager.sharedInstance().getDrawable(this, getResources(), R.drawable.ic_favourite));
         }
+    }
+
+    @Override
+    public boolean validated() {
+        return false;
     }
 
     @Override

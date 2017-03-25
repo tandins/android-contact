@@ -22,7 +22,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.realm.Realm;
 
-public class MainActivity extends Activity implements MainActivityPresenter {
+public class MainActivity extends Activity implements Presenter {
     @BindView(R.id.activity_main_rootFrameLayout)
     FrameLayout rootFrameLayout;
 
@@ -107,6 +107,11 @@ public class MainActivity extends Activity implements MainActivityPresenter {
             }
         }
     };
+
+    @Override
+    public boolean validated() {
+        return false;
+    }
 
     @Override
     public void showLoading() {

@@ -2,7 +2,6 @@ package com.liquidchoco.contact.singleton;
 
 import android.content.Context;
 
-import com.liquidchoco.contact.AddContactPresenter;
 import com.liquidchoco.contact.ContactDetailPresenter;
 import com.liquidchoco.contact.ContactPresenter;
 import com.liquidchoco.contact.model.Contact;
@@ -28,7 +27,8 @@ import retrofit.client.Response;
 public class ServerManager{
     private static ServerManager instance;
     private RestAdapter host;
-    String accept = "application/json";
+    private String contentType = "application/json";
+    private String errorString = "Unable to contact the server";
 
     private Realm realm;
     private Context context;
@@ -77,12 +77,12 @@ public class ServerManager{
 
             @Override
             public void failure(RetrofitError error) {
-                presenter.onFailed("Unable to contact the server");
+                presenter.onFailed(errorString);
             }
         });
     }
 
-    public void postContacts(String firstName, String lastName, String phoneNumber, String email, final AddContactPresenter presenter) {
+    public void postContacts(String firstName, String lastName, String phoneNumber, String email, final ContactDetailPresenter presenter) {
         HashMap<String, Object> parameter = new HashMap<>();
         parameter.put("first_name", firstName);
         parameter.put("last_name", lastName);
@@ -90,7 +90,7 @@ public class ServerManager{
         parameter.put("email", email);
         parameter.put("favorite", false);
 
-        serviceInterface.postContact("application/json", parameter, new Callback<Contact>() {
+        serviceInterface.postContact(contentType, parameter, new Callback<Contact>() {
             @Override
             public void success(Contact contact, Response response) {
                 realm.beginTransaction();
@@ -106,12 +106,12 @@ public class ServerManager{
 
                 }
                 realm.commitTransaction();
-                presenter.onSuccess();
+                presenter.onSuccess(contact);
             }
 
             @Override
             public void failure(RetrofitError error) {
-                presenter.onFailed("Unable to contact the server");
+                presenter.onFailed(errorString);
             }
         });
     }
@@ -125,7 +125,7 @@ public class ServerManager{
 
             @Override
             public void failure(RetrofitError error) {
-                presenter.onFailed("Unable to contact the server");
+                presenter.onFailed(errorString);
             }
         });
     }
@@ -139,7 +139,7 @@ public class ServerManager{
         parameter.put("profile_pic", contact.getProfilePic());
         parameter.put("favorite", contact.isFavorite());
 
-        serviceInterface.putContact(contact.getId(), "application/json", parameter, new Callback<Contact>() {
+        serviceInterface.putContact(contact.getId(), contentType, parameter, new Callback<Contact>() {
             @Override
             public void success(Contact contact, Response response) {
                 realm.beginTransaction();
@@ -151,7 +151,7 @@ public class ServerManager{
 
             @Override
             public void failure(RetrofitError error) {
-                presenter.onFailed("Unable to contact the server");
+                presenter.onFailed(errorString);
             }
         });
 
