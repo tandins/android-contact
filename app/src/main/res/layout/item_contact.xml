@@ -30,6 +30,7 @@
     </FrameLayout>
 
     <FrameLayout
+        android:id="@+id/item_contact_initialFrameLayout"
         android:layout_width="36dp"
         android:layout_height="36dp"
         android:layout_marginRight="12dp"
@@ -42,6 +43,12 @@
             android:text="A"
             android:textSize="20sp"
             android:textColor="@android:color/white"/>
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/item_contact_profileCircleImageView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"/>
     </FrameLayout>
 
     <com.liquidchoco.contact.customClass.RobotoRegularTextView
