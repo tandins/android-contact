@@ -113,7 +113,7 @@ public class ContactListAdapter extends RecyclerView.Adapter{
         if(position<totalFavorite && position==0) {
             itemHolder.initialTextView.setVisibility(View.INVISIBLE);
             itemHolder.favoriteIconImageView.setVisibility(View.VISIBLE);
-            itemHolder.favoriteIconImageView.setImageDrawable(InterfaceManager.sharedInstance().getDrawable(context, context.getResources(), R.drawable.ic_favourite_filled));
+            itemHolder.favoriteIconImageView.setImageDrawable(InterfaceManager.sharedInstance().getDrawable(context, context.getResources(), R.drawable.ic_star));
         }else if(alphabetHashMap.containsKey(position)) {
             itemHolder.initialTextView.setVisibility(View.VISIBLE);
             itemHolder.initialTextView.setText(alphabetHashMap.get(position));

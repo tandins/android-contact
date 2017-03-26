@@ -73,10 +73,8 @@ public class MainActivity extends Activity implements Presenter {
                 isHasLocalData = true;
                 recyclerView.setVisibility(View.VISIBLE);
                 emptyTextView.setVisibility(View.GONE);
-
-                showLoading();
                 contactListAdapter.updateAdapter(contactResponse.getContactRealmList());
-                hideLoading();
+                SettingsManager.getInstance().setFirstFetchData(false);
             }
         }
 

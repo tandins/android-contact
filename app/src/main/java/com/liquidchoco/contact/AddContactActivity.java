@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -34,6 +35,7 @@ import com.liquidchoco.contact.singleton.InterfaceManager;
 import com.liquidchoco.contact.singleton.ServerManager;
 import com.liquidchoco.contact.singleton.SettingsManager;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -236,7 +238,15 @@ public class AddContactActivity extends Activity implements Presenter {
 
                 if(isEligible) {
                     Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    if (photoFile != null) {
+                    if(photoFile == null) {
+                        try{
+                            photoFile = createImageFile();
+                            takePhoto(0);
+                        }catch (IOException ex){
+                            Log.e("err",ex.toString());
+
+                        }
+                    }else{
                         cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
                         startActivityForResult(cameraIntent, 0);
                     }
@@ -306,9 +316,8 @@ public class AddContactActivity extends Activity implements Presenter {
             @Override
             public void run() {
                 if(photoFile!=null) {
-                    photoUri = Uri.fromFile(photoFile);
+                    photoUri= Uri.fromFile(photoFile);
                 }
-
                 String imagePath = null;
                 if (resultCode == RESULT_OK && data!=null) {
                     if (requestCode == CAMERA_PHOTO) {
@@ -324,11 +333,14 @@ public class AddContactActivity extends Activity implements Presenter {
                             } else {
                                 croppedBitmap = (Bitmap) data.getExtras().getParcelable("data");
                             }
-                            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                            croppedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-                            contactImageView.setImageBitmap(croppedBitmap);
-                            contactImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                            photoUri = getImageUri(croppedBitmap);
+
+                            if(croppedBitmap != null) {
+                                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                                croppedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                                contactImageView.setImageBitmap(croppedBitmap);
+                                contactImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                                photoUri = getImageUri(croppedBitmap);
+                            }
                         }catch (IOException e){
                             Log.d("error", " IOException");
                         }
@@ -361,7 +373,7 @@ public class AddContactActivity extends Activity implements Presenter {
                     }
                 }
             }
-        },1000);
+        },2000);
     }
 
     public void cropCapturedImage(Uri picUri){

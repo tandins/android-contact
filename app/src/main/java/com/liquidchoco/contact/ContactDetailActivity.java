@@ -227,7 +227,14 @@ public class ContactDetailActivity extends Activity implements Presenter {
         this.contact = theContact;
         isFavorited = contact.isFavorite();
 
-        Glide.with(this).load(contact.getProfilePic()).placeholder(R.drawable.ic_profile_large).listener(new RequestListener<String, GlideDrawable>() {
+        String imageProfile = "";
+        if(contact.getProfilePic().equalsIgnoreCase("/images/missing.png")) {
+            imageProfile = "http://gojek-contacts-app.herokuapp.com" + contact.getProfilePic();
+        }else {
+            imageProfile = contact.getProfilePic();
+        }
+
+        Glide.with(this).load(imageProfile).placeholder(R.drawable.ic_profile_large).listener(new RequestListener<String, GlideDrawable>() {
             @Override
             public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
                 return false;

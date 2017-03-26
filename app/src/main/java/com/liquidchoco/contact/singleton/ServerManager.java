@@ -19,6 +19,10 @@ import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.OkClient;
 import retrofit.client.Response;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by Yunita Andini on 3/25/17.
@@ -63,23 +67,31 @@ public class ServerManager{
     }
 
     public void getContacts(final Presenter.ContactPresenter presenter){
-        serviceInterface.getContacts(new Callback<List<Contact>>() {
-            @Override
-            public void success(List<Contact> contacts, Response response) {
-                ContactResponse contactResponse = new ContactResponse(contacts);
+        serviceInterface.getContacts()
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<List<Contact>>() {
+                    @Override
+                    public void onCompleted() {
 
-                realm.beginTransaction();
-                realm.copyToRealmOrUpdate(contactResponse);
-                realm.commitTransaction();
+                    }
 
-                presenter.onSuccess(contactResponse);
-            }
+                    @Override
+                    public void onError(Throwable e) {
+                        presenter.onFailed(errorString);
+                    }
 
-            @Override
-            public void failure(RetrofitError error) {
-                presenter.onFailed(errorString);
-            }
-        });
+                    @Override
+                    public void onNext(List<Contact> contacts) {
+                        ContactResponse contactResponse = new ContactResponse(contacts);
+
+                        realm.beginTransaction();
+                        realm.copyToRealmOrUpdate(contactResponse);
+                        realm.commitTransaction();
+
+                        presenter.onSuccess(contactResponse);
+                    }
+                });
     }
 
     public void postContacts(String firstName, String lastName, String phoneNumber, String email, final Presenter.ContactDetailPresenter presenter) {
@@ -90,43 +102,59 @@ public class ServerManager{
         parameter.put("email", email);
         parameter.put("favorite", false);
 
-        serviceInterface.postContact(contentType, parameter, new Callback<Contact>() {
-            @Override
-            public void success(Contact contact, Response response) {
-                ContactResponse contactResponse = realm.where(ContactResponse.class).equalTo("id", "0").findFirst();
-                if(contactResponse!=null) {
-                    realm.beginTransaction();
-                    RealmList<Contact> contactRealmList = contactResponse.getContactRealmList();
-                    contactRealmList.add(contact);
-                    ContactResponse newContactResponse = new ContactResponse(contactRealmList);
-                    realm.copyToRealmOrUpdate(newContactResponse);
-                    realm.commitTransaction();
-                }
-                presenter.onSuccess(contact);
-            }
+        serviceInterface.postContact(contentType, parameter)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<Contact>() {
+                    @Override
+                    public void onCompleted() {
 
-            @Override
-            public void failure(RetrofitError error) {
-                presenter.onFailed(errorString);
-            }
-        });
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        presenter.onFailed(errorString);
+                    }
+
+                    @Override
+                    public void onNext(Contact contact) {
+                        ContactResponse contactResponse = realm.where(ContactResponse.class).equalTo("id", "0").findFirst();
+                        if(contactResponse!=null) {
+                            realm.beginTransaction();
+                            RealmList<Contact> contactRealmList = contactResponse.getContactRealmList();
+                            contactRealmList.add(contact);
+                            ContactResponse newContactResponse = new ContactResponse(contactRealmList);
+                            realm.copyToRealmOrUpdate(newContactResponse);
+                            realm.commitTransaction();
+                        }
+                        presenter.onSuccess(contact);
+                    }
+                });
     }
 
     public void getContactDetail(int contactId, final Presenter.ContactDetailPresenter presenter){
-        serviceInterface.getContactDetail(contactId, new Callback<Contact>() {
-            @Override
-            public void success(Contact contact, Response response) {
-                realm.beginTransaction();
-                realm.copyToRealmOrUpdate(contact);
-                realm.commitTransaction();
-                presenter.onSuccess(contact);
-            }
+        serviceInterface.getContactDetail(contactId)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<Contact>() {
+                    @Override
+                    public void onCompleted() {
 
-            @Override
-            public void failure(RetrofitError error) {
-                presenter.onFailed(errorString);
-            }
-        });
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        presenter.onFailed(errorString);
+                    }
+
+                    @Override
+                    public void onNext(Contact contact) {
+                        realm.beginTransaction();
+                        realm.copyToRealmOrUpdate(contact);
+                        realm.commitTransaction();
+                        presenter.onSuccess(contact);
+                    }
+                });
     }
 
     public void updateContact(Contact contact, final Presenter.ContactDetailPresenter presenter){
@@ -138,21 +166,28 @@ public class ServerManager{
         parameter.put("profile_pic", contact.getProfilePic());
         parameter.put("favorite", contact.isFavorite());
 
-        serviceInterface.putContact(contact.getId(), contentType, parameter, new Callback<Contact>() {
-            @Override
-            public void success(Contact contact, Response response) {
-                realm.beginTransaction();
-                realm.copyToRealmOrUpdate(contact);
-                realm.commitTransaction();
+        serviceInterface.putContact(contact.getId(), contentType, parameter)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<Contact>() {
+                    @Override
+                    public void onCompleted() {
 
-                presenter.onSuccess(contact);
-            }
+                    }
 
-            @Override
-            public void failure(RetrofitError error) {
-                presenter.onFailed(errorString);
-            }
-        });
+                    @Override
+                    public void onError(Throwable e) {
+                        presenter.onFailed(errorString);
+                    }
 
+                    @Override
+                    public void onNext(Contact contact) {
+                        realm.beginTransaction();
+                        realm.copyToRealmOrUpdate(contact);
+                        realm.commitTransaction();
+
+                        presenter.onSuccess(contact);
+                    }
+                });
     }
 }
