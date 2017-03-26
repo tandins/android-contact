@@ -41,7 +41,7 @@ import butterknife.OnLongClick;
 import io.realm.Realm;
 
 /**
- * Created by dss-10 on 3/25/17.
+ * Created by Yunita Andini on 3/25/17.
  */
 
 public class ContactDetailActivity extends Activity implements Presenter {
@@ -272,7 +272,7 @@ public class ContactDetailActivity extends Activity implements Presenter {
         InterfaceManager.sharedInstance().showErrorMessage(this, errorString);
     }
 
-    ContactDetailPresenter contactDetailPresenter = new ContactDetailPresenter() {
+    Presenter.ContactDetailPresenter contactDetailPresenter = new ContactDetailPresenter() {
         @Override
         public void onSuccess(Contact contact) {
             hideLoading();

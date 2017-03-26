@@ -28,6 +28,8 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.liquidchoco.contact.model.Contact;
+import com.liquidchoco.contact.model.serverResponse.ContactResponse;
+import com.liquidchoco.contact.singleton.AppController;
 import com.liquidchoco.contact.singleton.InterfaceManager;
 import com.liquidchoco.contact.singleton.ServerManager;
 import com.liquidchoco.contact.singleton.SettingsManager;
@@ -44,6 +46,8 @@ import java.util.regex.Pattern;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.realm.Realm;
+import io.realm.RealmList;
 
 /**
  * Created by Yunita Andini on 3/25/17.
@@ -84,11 +88,15 @@ public class AddContactActivity extends Activity implements Presenter {
     @BindView(R.id.activity_add_contact_invalidEmailTextView)
     TextView invalidEmailTextView;
 
+    Realm realm;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_contact);
         ButterKnife.bind(this);
+
+        realm = AppController.getInstance().realm;
 
         contactImageView.getLayoutParams().height = contactImageView.getLayoutParams().width * 17 / 10;
 

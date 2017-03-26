@@ -101,4 +101,13 @@ public class SettingsManager {
     public void setContact(Contact contact) {
         this.contact = contact;
     }
+
+    public Boolean isFirstFetchData() {
+        return getBool("isFirstFetchData", true);
+    }
+
+    public void setFirstFetchData(Boolean isFirstFetchData) {
+        setBool("isFirstFetchData", isFirstFetchData);
+    }
+
 }

@@ -3,6 +3,7 @@ package com.liquidchoco.contact.adapter;
 import android.content.Context;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +17,9 @@ import com.liquidchoco.contact.singleton.InterfaceManager;
 
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import io.realm.RealmList;
@@ -30,6 +33,8 @@ public class ContactListAdapter extends RecyclerView.Adapter {
     private RealmList<Contact> contactRealmList = new RealmList<>();
     private int totalFavorite = 0;
     private ListenerInterface listenerInterface;
+    private Set<String> initialSet = new HashSet<>();
+    private Map<Integer, String> alphabetHashMap = new HashMap<>();
 
     public ContactListAdapter(Context context, ListenerInterface listenerInterface) {
         this.context = context;
@@ -42,6 +47,8 @@ public class ContactListAdapter extends RecyclerView.Adapter {
 
     public void updateAdapter(RealmList<Contact> contactRealmList){
         this.contactRealmList = new RealmList<>();
+        this.initialSet = new HashSet<>();
+        this.alphabetHashMap = new HashMap<>();
 
         RealmList<Contact> favoriteRealmList = new RealmList<>();
         Set<Integer> favoriteContactIdSet = new HashSet<>();
@@ -78,6 +85,7 @@ public class ContactListAdapter extends RecyclerView.Adapter {
         });
 
         this.contactRealmList.addAll(favoriteRealmList.size(), unfavoriteRealmList);
+        notifyDataSetChanged();
     }
 
     @Override
@@ -90,15 +98,22 @@ public class ContactListAdapter extends RecyclerView.Adapter {
         ItemHolder itemHolder = (ItemHolder) holder;
         final Contact contact = contactRealmList.get(position);
 
+        if(position >= totalFavorite) {
+            if (!initialSet.contains(InterfaceManager.sharedInstance().getInitialName(contact.getFirstName()))) {
+                initialSet.add(InterfaceManager.sharedInstance().getInitialName(contact.getFirstName()));
+                alphabetHashMap.put(position, InterfaceManager.sharedInstance().getInitialName(contact.getFirstName()));
+            }
+        }
+
         if(position<totalFavorite && position==0) {
             itemHolder.initialTextView.setVisibility(View.INVISIBLE);
             itemHolder.favoriteIconImageView.setVisibility(View.VISIBLE);
-            itemHolder.favoriteIconImageView.setImageDrawable(InterfaceManager.sharedInstance().setTint(InterfaceManager.sharedInstance().getDrawable(context, context.getResources(), R.drawable.ic_favourite_filled), Color.parseColor("#8BC34A")));
-        }else if(position == totalFavorite) {
+            itemHolder.favoriteIconImageView.setImageDrawable(InterfaceManager.sharedInstance().getDrawable(context, context.getResources(), R.drawable.ic_favourite_filled));
+        }else if(alphabetHashMap.containsKey(position)) {
             itemHolder.initialTextView.setVisibility(View.VISIBLE);
-            itemHolder.initialTextView.setText(InterfaceManager.sharedInstance().getInitialName(contact.getFirstName()));
+            itemHolder.initialTextView.setText(alphabetHashMap.get(position));
             itemHolder.favoriteIconImageView.setVisibility(View.INVISIBLE);
-        }else {
+        } else {
             itemHolder.initialTextView.setVisibility(View.INVISIBLE);
             itemHolder.favoriteIconImageView.setVisibility(View.INVISIBLE);
         }

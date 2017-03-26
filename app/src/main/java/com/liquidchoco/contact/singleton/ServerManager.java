@@ -1,9 +1,9 @@
 package com.liquidchoco.contact.singleton;
 
 import android.content.Context;
+import android.util.Log;
 
-import com.liquidchoco.contact.ContactDetailPresenter;
-import com.liquidchoco.contact.ContactPresenter;
+import com.liquidchoco.contact.Presenter;
 import com.liquidchoco.contact.model.Contact;
 import com.liquidchoco.contact.model.serverResponse.ContactResponse;
 import com.squareup.okhttp.OkHttpClient;
@@ -62,7 +62,7 @@ public class ServerManager{
         serviceInterface = host.create(ServiceInterface.class);
     }
 
-    public void getContacts(final ContactPresenter presenter){
+    public void getContacts(final Presenter.ContactPresenter presenter){
         serviceInterface.getContacts(new Callback<List<Contact>>() {
             @Override
             public void success(List<Contact> contacts, Response response) {
@@ -82,7 +82,7 @@ public class ServerManager{
         });
     }
 
-    public void postContacts(String firstName, String lastName, String phoneNumber, String email, final ContactDetailPresenter presenter) {
+    public void postContacts(String firstName, String lastName, String phoneNumber, String email, final Presenter.ContactDetailPresenter presenter) {
         HashMap<String, Object> parameter = new HashMap<>();
         parameter.put("first_name", firstName);
         parameter.put("last_name", lastName);
@@ -93,18 +93,31 @@ public class ServerManager{
         serviceInterface.postContact(contentType, parameter, new Callback<Contact>() {
             @Override
             public void success(Contact contact, Response response) {
-                realm.beginTransaction();
-                RealmList<Contact> contactRealmList = new RealmList<Contact>();
                 ContactResponse contactResponse = realm.where(ContactResponse.class).equalTo("id", "0").findFirst();
                 if(contactResponse!=null) {
-                    if (!contactResponse.getContactRealmList().contains(contact)) {
-                        contactRealmList = contactResponse.getContactRealmList();
-                        contactRealmList.add(contact);
-                    }
-                    contactResponse.setContactRealmList(contactRealmList);
-                    realm.copyToRealmOrUpdate(contactResponse);
-
+                    realm.beginTransaction();
+                    RealmList<Contact> contactRealmList = contactResponse.getContactRealmList();
+                    contactRealmList.add(contact);
+                    ContactResponse newContactResponse = new ContactResponse(contactRealmList);
+                    realm.copyToRealmOrUpdate(newContactResponse);
+                    realm.commitTransaction();
                 }
+                presenter.onSuccess(contact);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                presenter.onFailed(errorString);
+            }
+        });
+    }
+
+    public void getContactDetail(int contactId, final Presenter.ContactDetailPresenter presenter){
+        serviceInterface.getContactDetail(contactId, new Callback<Contact>() {
+            @Override
+            public void success(Contact contact, Response response) {
+                realm.beginTransaction();
+                realm.copyToRealmOrUpdate(contact);
                 realm.commitTransaction();
                 presenter.onSuccess(contact);
             }
@@ -116,21 +129,7 @@ public class ServerManager{
         });
     }
 
-    public void getContactDetail(int contactId, final ContactDetailPresenter presenter){
-        serviceInterface.getContactDetail(contactId, new Callback<Contact>() {
-            @Override
-            public void success(Contact contact, Response response) {
-                presenter.onSuccess(contact);
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                presenter.onFailed(errorString);
-            }
-        });
-    }
-
-    public void updateContact(Contact contact, final ContactDetailPresenter presenter){
+    public void updateContact(Contact contact, final Presenter.ContactDetailPresenter presenter){
         HashMap<String, Object> parameter = new HashMap<>();
         parameter.put("first_name", contact.getFirstName());
         parameter.put("last_name", contact.getLastName());

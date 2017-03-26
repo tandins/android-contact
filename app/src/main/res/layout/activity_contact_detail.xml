@@ -60,6 +60,9 @@
                 android:layout_gravity="bottom"
                 android:layout_marginLeft="16dp"
                 android:layout_marginBottom="16dp"
+                android:layout_marginRight="16dp"
+                android:singleLine="true"
+                android:ellipsize="end"
                 android:text="Betty Allen"
                 android:textSize="28sp"
                 android:textColor="@android:color/white"/>

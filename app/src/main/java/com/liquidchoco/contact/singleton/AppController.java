@@ -37,6 +37,7 @@ public class AppController extends Application {
             Log.v("AppController","context available");
             realm = buildDatabase();
             SettingsManager.getInstance().getAllPref();
+            SettingsManager.getInstance().setFirstFetchData(true);
         }else{
             Log.v("AppController","context null");
         }

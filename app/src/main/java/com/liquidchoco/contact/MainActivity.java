@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -21,6 +22,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.realm.Realm;
+import io.realm.RealmList;
 
 public class MainActivity extends Activity implements Presenter {
     @BindView(R.id.activity_main_rootFrameLayout)
@@ -36,6 +38,8 @@ public class MainActivity extends Activity implements Presenter {
     ContactListAdapter contactListAdapter;
     LinearLayoutManager linearLayoutManager;
     boolean isHasLocalData;
+    int contactIndex = 0;
+    RealmList<Contact> contactRealmList = new RealmList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,18 +74,23 @@ public class MainActivity extends Activity implements Presenter {
                 recyclerView.setVisibility(View.VISIBLE);
                 emptyTextView.setVisibility(View.GONE);
 
+                showLoading();
                 contactListAdapter.updateAdapter(contactResponse.getContactRealmList());
+                hideLoading();
             }
         }
 
-        showLoading();
-        ServerManager.getInstance().getContacts(contactPresenter);
+        if (SettingsManager.getInstance().isFirstFetchData()) {
+            SettingsManager.getInstance().setFirstFetchData(false);
+            showLoading();
+            ServerManager.getInstance().getContacts(contactPresenter);
+        }
     }
 
     ContactPresenter contactPresenter = new ContactPresenter() {
         @Override
         public void onSuccess(ContactResponse contactResponse) {
-            hideLoading();
+//            hideLoading();
             recyclerView.setVisibility(View.GONE);
             emptyTextView.setVisibility(View.VISIBLE);
             if (contactResponse != null) {
@@ -89,7 +98,24 @@ public class MainActivity extends Activity implements Presenter {
                     recyclerView.setVisibility(View.VISIBLE);
                     emptyTextView.setVisibility(View.GONE);
 
+                    /*
+
+                    DO THIS BASED ON SERVER RESPONSE,
+                    SERVER DOESN'T RETURN FAVORITE BUT URL
+                    SO IT WILL TOOK AWHILE TO LOAD CONTACT LIST
+                    SINCE IT CALL DIFFERENT SERVER API
+
+                     */
+
+                    getContactDetail(0, contactResponse.getContactRealmList());
+
+                    /*
+
+                    DO THIS BASED ON API DOCUMENTATION
                     contactListAdapter.updateAdapter(contactResponse.getContactRealmList());
+
+                    */
+
                 }
             }
         }
@@ -139,6 +165,30 @@ public class MainActivity extends Activity implements Presenter {
             onPause();
             SettingsManager.getInstance().setContact(contact);
             startActivity(new Intent(MainActivity.this, ContactDetailActivity.class));
+        }
+    };
+
+    private void getContactDetail(int contactIndex, RealmList<Contact> contactRealmList) {
+        this.contactRealmList = contactRealmList;
+        this.contactIndex = contactIndex;
+
+        if(contactIndex<contactRealmList.size()) {
+            ServerManager.getInstance().getContactDetail(contactRealmList.get(contactIndex).getId(), contactDetailPresenter);
+        }else {
+            hideLoading();
+            reloadLocalData();
+        }
+    }
+
+    ContactDetailPresenter contactDetailPresenter = new ContactDetailPresenter() {
+        @Override
+        public void onSuccess(Contact contact) {
+            getContactDetail(++contactIndex, contactRealmList);
+        }
+
+        @Override
+        public void onFailed(String errorString) {
+            showErrorMessage(errorString);
         }
     };
 }
